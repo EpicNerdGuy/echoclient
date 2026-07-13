@@ -32,12 +32,6 @@ Run the server first, then the client, in separate terminals:
 ./client
 ```
 
-### Using Cargo (if set up as a workspace)
-
-```bash
-cargo run --bin server
-cargo run --bin client
-```
 
 ## Usage
 
