@@ -1,33 +1,60 @@
 # echoclient
 
-A simple, lightweight TCP echo client and server implementation written in Rust.
+A minimal TCP client/server pair written in Rust, built while learning Rust networking fundamentals coming from a C background. The server basically echoes everything the client says.
 
-The server listens for incoming TCP connections and echoes back any data it receives. The client connects to the server, sends messages, and displays the echoed responses.
+## Overview
 
-## Project Structure
+- **server.rs** listens on `127.0.0.1:6767`, accepts incoming TCP connections, and reads data sent by single connected client into a fixed 512-byte buffer.
+- **client.rs** connects to the server and streams stdin input to it over the socket, also using a fixed 512-byte buffer.
 
-* `src/server.rs`: Contains the TCP server logic.
-* `src/client.rs`: Contains the TCP client logic.
-* `src/main.rs`: The main entry point for the application.
+No dynamic allocation for I/O buffers, reads and writes work directly against fixed-size stack arrays (`[u8; 512]`), similar to how you'd handle a raw socket buffer in C.
 
-## Prerequisites
+## Requirements
 
-Make sure you have [Rust and Cargo](https://rustup.rs/) installed on your system.
+- Rust toolchain (`rustc`, and `cargo` if using the Cargo project structure)
 
-## How to Run
+## Build and run
 
-1. **Clone or navigate to the project directory:**
-    ```bash
-    cd echoclient
-    ```
+### Using rustc directly
 
-2. **Build the project:**
-    ```bash
-    cargo build
-    ```
+```bash
+rustc server.rs
+rustc client.rs
+```
 
-3. **Run the application:**
-    ```bash
-    cargo run
-    ```
-    *(Note: Depending on your `main.rs` configuration, you may need to run the server and client in separate terminal windows.)*
+Run the server first, then the client, in separate terminals:
+
+```bash
+./server
+```
+
+```bash
+./client
+```
+
+### Using Cargo (if set up as a workspace)
+
+```bash
+cargo run --bin server
+cargo run --bin client
+```
+
+## Usage
+
+1. Start the server. It prints `Server listening on port 6767` and waits for a connection.
+2. Start the client. Once connected, type input and press Enter, it gets sent to the server over the socket.
+3. The server prints whatever it receives.
+4. Disconnect the client with Ctrl+D (EOF). The server logs the disconnect and returns to accepting new connections.
+
+## Demo
+
+
+
+https://github.com/user-attachments/assets/504efa2d-e829-4acc-8d68-e77eb35491e8
+
+
+
+## Notes
+
+- Currently handles one client connection at a time.
+- Buffer size is fixed at 512 bytes per read.
